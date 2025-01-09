@@ -29,6 +29,7 @@ section {
     button{
         &.operator {font-size: 40px; background: #ff9b19;}
         &.equals {color: #fff; background: #333;}
+        &.active {background: #ffd51a;}
     }
 
 }

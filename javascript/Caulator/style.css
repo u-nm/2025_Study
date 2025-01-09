@@ -116,4 +116,7 @@ section h1 {
 .buttons button.equals {
   color: #fff;
   background: #333;
+}
+.buttons button.active {
+  background: #ffd51a;
 }/*# sourceMappingURL=style.css.map */
