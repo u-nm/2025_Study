@@ -29,7 +29,38 @@ section {
   -ms-border-radius: 15px;
   -o-border-radius: 15px;
 }
-section h1 {
+
+.hidden {
+  display: none !important;
+}
+
+.quiz-user {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  height: 300px;
+}
+.quiz-user h1 {
+  margin: 0 0 15px;
+  font-size: 30px;
+  font-weight: bold;
+  text-align: center;
+}
+.quiz-user p {
+  margin: 0 0 15px;
+  text-align: center;
+}
+.quiz-user input {
+  width: 100%;
+  padding: 5px 10px;
+  margin: 0 0 20px;
+}
+.quiz-user button {
+  width: 100%;
+}
+
+.quiz-box h1 {
   margin: 0 0 15px;
   font-size: 30px;
   font-weight: bold;
