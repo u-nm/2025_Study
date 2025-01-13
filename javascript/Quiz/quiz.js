@@ -28,17 +28,24 @@ document.addEventListener('DOMContentLoaded', () => {
             score: 8,
         }
     ]
-    const quizUser = document.querySelector('.quiz-user');
-    const userName = document.querySelector('.user-name');
-    const quizNum = document.querySelector('.quiz-num');
-    const quizBox = document.querySelector('.quiz-box');
-    const qna = document.querySelector('.qna');
-    const nextUser = document.querySelector('.next-user');
-    const nextQuiz = document.querySelector('.next-quiz');
 
     let quizIndex = 0;
     let totalscore = 0;
+    let selectedA = new Array(quizList.length).fill(null);
 
+    // 사용자 이름
+    const quizUser = document.querySelector('.quiz-user');
+    const userName = document.querySelector('.user-name');
+    const nextUser = document.querySelector('.next-user');
+
+    // 퀴즈 영역
+    const quizNum = document.querySelector('.quiz-num');
+    const question = document.querySelector('.question');
+    const answers = document.querySelector('.answers');
+    const prevQuiz = document.querySelector('.prev-btn');
+    const nextQuiz = document.querySelector('.next-btn');
+
+    // 사용자 정보 클릭
     nextUser.addEventListener('click', ()=> {
         if(userName.value !== '') {
             quizUser.classList.add('hidden');
@@ -50,26 +57,11 @@ document.addEventListener('DOMContentLoaded', () => {
     });
     
     function showQuiz() {
-        let currentIndex = quizList[quizIndex];
+        const quizA = document.createElement(li);
+        const currentIndex = quizList[quizIndex];
+
         quizNum.textContent = `Quiz ${quizIndex + 1}`;
-
-        const question = document.createElement('p');
         question.textContent = currentIndex.q;
-        
-        const answer = document.createElement('ul');
-        const answerLi = document.createElement('li');
-        const answerTxt = document.createElement('input');
-        answerTxt.setAttribute('type', 'text');
-        answerLi.appendChild(answerTxt);        
-        answer.appendChild(answerLi);
-        
-        const answerBtn = document.createElement('button');
-        answerBtn.classList.add('next-quiz');
-        answerBtn.textContent = 'Next';
-
-        qna.appendChild(question);
-        qna.appendChild(answer);
-        qna.appendChild(answerBtn);
 
     }
 
