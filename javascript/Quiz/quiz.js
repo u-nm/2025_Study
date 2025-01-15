@@ -5,36 +5,42 @@ document.addEventListener('DOMContentLoaded', () => {
         {
             q: "qqqqqqqqqqqqqqqqqqqq 몇개",
             a: [13, 18, 20, 24],
+            correct: 20,
             score: 4,
         },
         {
             q: "qqqqqqqqqqqqqqqqqqqq 몇개",
             a: [14, 18, 20, 24],
+            correct: 20,
             score: 5,
         },
         {
             q: "qqqqqqqqqqqqqqqqqqqq 몇개",
             a: [15, 18, 20, 24],
+            correct: 20,
             score: 5,
         },
         {
             q: "qqqqqqqqqqqqqqqqqqqq 몇개",
             a: [16, 18, 20, 24],
+            correct: 20,
             score: 6,
         },
         {
             q: "qqqqqqqqqqqqqqqqqqqq 몇개",
             a: [17, 18, 20, 24],
+            correct: 20,
             score: 8,
         }
     ]
 
     let quizIndex = 0;
-    let selectedA = new Array(quizList.length).fill(null);
+    let selectedA = JSON.parse(localStorage.getItem("quizAnswers")) || new Array(quizList.length).fill(null);
+    let userNames = localStorage.getItem("userName") || ""; // 사용자 이름 불러오기
 
     // 사용자 이름
     const quizUser = document.querySelector('.quiz-user');
-    const userName = document.querySelector('.user-name');
+    const nameText = document.querySelector('.user-name');
     const nextUser = document.querySelector('.next-user');
 
     // 퀴즈 영역
@@ -46,14 +52,25 @@ document.addEventListener('DOMContentLoaded', () => {
     const nextQuiz = document.querySelector('.next-btn');
     const result = document.querySelector('.quiz-result');
 
+    // 사용자가 저장된 이름이 있으면 자동 입력
+    if (userNames) {
+        nameText.value = userNames;
+    }
+
     // 사용자 정보 클릭
     nextUser.addEventListener('click', ()=> {
-        if(userName.value !== '') {
+        userNames = nameText.value.trim();
+        if(userNames) {
+            localStorage.setItem("userName", userNames);
+
+            console.log(userNames);
+
             quizUser.classList.add('hidden');
             quizBox.classList.remove('hidden');
         } else {
             alert('이름입력');
-            return false;
+            nameText.focus();
+            return;
         }
     });
     
@@ -64,7 +81,7 @@ document.addEventListener('DOMContentLoaded', () => {
         question.textContent = currentIndex.q;
 
         // 기존 답변 삭제 후 새 답변 추가
-        answers.textContent = '';
+        answers.innerHTML = '';
 
         const answerUl = document.createElement('ul');
 
@@ -77,11 +94,11 @@ document.addEventListener('DOMContentLoaded', () => {
             answerRadio.name = "answer"; // 같은 그룹으로 묶기
             answerRadio.value = answer;
 
-            if(selectedA[currentIndex] === answer) {
+            if(selectedA[quizIndex] === answer) {
                 answerRadio.checked = true;
             }
 
-            answerRadio.addEventListener('onchange', () => selected(answer));
+            answerRadio.addEventListener('change', () => selected(answer));
 
             answerLabel.appendChild(answerRadio);
             answerLabel.appendChild(document.createTextNode(answer));
@@ -93,37 +110,84 @@ document.addEventListener('DOMContentLoaded', () => {
         answers.appendChild(answerUl);
 
         // 첫번째 문제면 이전버튼 숨기기
-        prevQuiz.classList.toggle('hidden', currentIndex === 0);
+        prevQuiz.classList.toggle('hidden', quizIndex === 0);
 
     }
 
     // 선택된 답 저장
     function selected(answer) {
-        selected[currentIndex] = answer;
+        selectedA[quizIndex] = answer;
+        localStorage.setItem("quizAnswers", JSON.stringify(selectedA));
     }
 
     // 결과 화면
-
     function showResult() {
-        quizNum.textContent = 'Quiz Completed!';
         quizBox.classList.add('hidden');
-        result.classList.remove('hidden');
 
         // 점수 계산 및 결과 표시
-        let totalscore = 0;
-        let resultHTML = `<h2>결과</h2><ul>`;
+        let totalScore = 0;
+        let resultHTML = `<h2>Quiz Completed!</h2><ul>`;
 
-        quizList.forEach((q, index) => {
-            const isCorrect = selectedAnswers[index] === q.correct;
-            if (isCorrect) score++;
-            resultHTML += `<li>Q${index + 1}: ${q.question} <br> 
-                당신의 답: <strong>${selectedAnswers[index] || "미선택"}</strong> 
-                (${isCorrect ? "✅ 정답" : `❌ 오답 (정답: ${q.correct})`})</li><br>`;
+        quizList.forEach((quizs, index) => {
+            const isCorrect = selectedA[index] === quizs.correct;
+
+            if (isCorrect) {
+                totalScore += quizs.score;
+            }
+
+            // 정답의 번호 찾기
+            const correctIndex = quizs.a.indexOf(quizs.correct) + 1;
+            const selectedIndex = quizs.a.indexOf(selectedA[quizIndex]) + 1;
+
+            resultHTML += `<li>
+            Q${index + 1}: ${quizs.q} <br> 
+            당신의 답: <strong>${selectedIndex > 0 ? `${selectedIndex}. ${selectedA[quizIndex]}` : "미선택"}</strong> 
+            (${isCorrect ? "✅ 정답" : `❌ 오답 (정답: <strong>${correctIndex}. ${quizs.correct}</strong>)`})
+        </li><br>`;
         });
-        resultHTML += `<h3>총 점수: ${score} / ${questions.length}</h3></ul>`;
-        resultContainer.innerHTML = resultHTML;
-        resultContainer.classList.remove("hidden");
+
+        resultHTML += `<h3>${userNames ? userNames + "님의 총 점수" : "총 점수"}: ${totalScore}</h3></ul>`;
+
+        const firstPage = document.createElement('button');
+        firstPage.textContent = '처음으로';
+
+        firstPage.addEventListener('click', () => {
+            quizIndex = 0;
+            selectedA = JSON.parse(localStorage.getItem("quizAnswers")) || new Array(quizList.length).fill(null);
+
+            result.classList.add('hidden');
+            quizBox.classList.add('hidden');
+            quizUser.classList.remove('hidden');
+        })
+
+        result.innerHTML = resultHTML;
+        result.textContent += firstPage;
+        result.classList.remove("hidden");
     }
+
+    nextQuiz.addEventListener('click', () => {
+        if(!selectedA[quizIndex]) {
+            alert("답변을 선택해주세요!");
+            const firstRadio = document.querySelector("input[name='answer']");
+            if (firstRadio) firstRadio.focus(); // 첫 번째 라디오 버튼에 포커스
+            return;
+        };
+
+        if (quizIndex < quizList.length - 1) {
+            quizIndex++;
+            showQuiz();
+        } else {
+            showResult();
+        };
+
+    });
+
+    prevQuiz.addEventListener('click', () => {
+        if (quizIndex > 0) {
+            quizIndex--;
+            showQuiz();
+        }
+    });
 
     showQuiz();
 
