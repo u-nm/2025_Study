@@ -148,21 +148,24 @@ document.addEventListener('DOMContentLoaded', () => {
 
         resultHTML += `<h3>${userNames ? userNames + "님의 총 점수" : "총 점수"}: ${totalScore}</h3></ul>`;
 
-        const firstPage = document.createElement('button');
-        firstPage.textContent = '처음으로';
-
-        firstPage.addEventListener('click', () => {
-            quizIndex = 0;
-            selectedA = JSON.parse(localStorage.getItem("quizAnswers")) || new Array(quizList.length).fill(null);
-
-            result.classList.add('hidden');
-            quizBox.classList.add('hidden');
-            quizUser.classList.remove('hidden');
-        })
-
+        resultHTML += `<button class="restart">처음으로 돌아가기</button>`;
         result.innerHTML = resultHTML;
-        result.textContent += firstPage;
         result.classList.remove("hidden");
+
+        const restart = document.querySelector('.restart');
+        restart.addEventListener('click', restartQuiz);
+    }
+
+    function restartQuiz() {
+        quizIndex = 0;
+        selectedA = new Array(quizList.length).fill(null);
+        localStorage.removeItem("quizAnswers");
+
+        quizUser.classList.remove('hidden');
+        quizBox.classList.add('hidden');
+        prevQuiz.classList.add('hidden');
+        nextQuiz.classList.remove("hidden");
+        result.classList.add("hidden");
     }
 
     nextQuiz.addEventListener('click', () => {
