@@ -1,0 +1,10 @@
+header {
+  display: flex;
+  justify-content: center;
+}
+
+header ul {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}/*# sourceMappingURL=layouts.css.map */
